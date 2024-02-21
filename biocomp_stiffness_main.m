@@ -2,8 +2,7 @@
 % Update and cleaned up, Februar 2024
 
 clear; clc; close all;
-addpath(genpath('../'))
-%warning off %otherwise constant Mori-Tanaka issue
+warning off %otherwise constant Mori-Tanaka issue
 
 %% Input
 %note: if nothing specified, it is always a single scalar
@@ -21,17 +20,17 @@ comp.fib.rho=NaN; %optional, fiber density [g/cm³]
 %comp.fib.ft=NaN; %optional, fiber tensile strength from experiment to compare [MPa]
 comp.fib.l=NaN; %optional, average fiber length [mm]
 comp.fib.d=NaN; %optional, average fiber diameter [µm]
-comp.fib.ardis='single'; %optional, aspect ratio distribution: "single","lognormal", "weibull" [single]
-comp.fib.ar=[NaN,NaN];%2-element vector, optional, defining the aspect ratio distribution function, could be [ar, NaN] with ar as the mean aspect ratio
-comp.fib.ori='3Diso'; %mandatory, either '1D, '3Diso', '2Diso', 'vMF', "vMs"
-comp.fib.oripar=NaN; %orientation distribution parameter (concentration) [-]
+comp.fib.ardis='single'; %optional, aspect ratio distribution: "single","normal","lognormal", "weibull", "uniform", default is single
+comp.fib.ar=[50,10];%2-element vector, optional, defining the aspect ratio distribution function, could be [ar, NaN] with ar as the mean aspect ratio
+comp.fib.ori='vMF'; %mandatory, either '1D, '3Diso', '2Diso', 'vMF', "vMs"
+comp.fib.oripar=10; %orientation distribution parameter (concentration) [-]
 
 %D)fiber microscopic
 comp.fib.MFA=NaN; %optional, microfibril angle [degrees]
 comp.fib.lumpor=NaN; %optional, lumen porosity [-]
 comp.fib.mfrac=NaN; %optional/mandatory, mass fraction of fiber [-], note that either mass or volume fraction has to be given
 comp.fib.vfrac=0.3; %optional/mandatory, volume fraction of fiber [-], note that either mass or volume fraction has to be given
-comp.fib.mchem.totcel=NaN; %optional, total cellulose (amorph+crystalline) content [-], w.r.t. cell wall mass
+comp.fib.mchem.totcel=NaN; %optional, total cellulose (amorph+crystalline) content [-], w.r.t. cell wall mass, note if one is given, all have to be given
 comp.fib.mchem.hemcel=NaN; %optional, hemicellulose content [-], w.r.t. cell wall mass
 comp.fib.mchem.lignin=NaN; %optional, lignin content [-], w.r.t. cell wall mass
 comp.fib.mchem.pectin=NaN; %optional, pectin content [-], w.r.t. cell wall mass
@@ -51,8 +50,8 @@ comp.mat.fair=NaN;%optional, air porosity [-], default is zero
 
 
 %F) interface
-comp.IF.mode=0; % empty or 0...perfect bond, 1...imperfect bond
-comp.IF.par=[NaN, NaN]; % two-element vector with interface compliances [alpha, beta], tangential and longitudinal compliance in 1/GPa, attention: normalization w.r.t. fiber radius, actually m/GPa if not normalized in R function
+comp.IF.mode=1; % empty or 0...perfect bond, 1...imperfect bond
+comp.IF.par=[0 10]; % two-element vector with interface compliances [alpha, beta], tangential and longitudinal compliance in 1/GPa, attention: normalization w.r.t. fiber radius, actually m/GPa if not normalized in R function
 
 % additional parameters
 comp.MLar=1e-20; % aspect ratio of Middle lamella/lumen, either infinitely long 1e-20, or smaller [-]
