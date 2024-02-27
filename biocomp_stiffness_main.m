@@ -20,10 +20,10 @@ comp.fib.rho=NaN; %optional, fiber density [g/cm³]
 %comp.fib.ft=NaN; %optional, fiber tensile strength from experiment to compare [MPa]
 comp.fib.l=NaN; %optional, average fiber length [mm]
 comp.fib.d=NaN; %optional, average fiber diameter [µm]
-comp.fib.ardis='lognormal'; %optional, aspect ratio distribution: "single","normal","lognormal", "weibull", "uniform", default is single
+comp.fib.ardis='single'; %optional, aspect ratio distribution: "single","normal","lognormal", "weibull", "uniform", default is single
 comp.fib.ar=[50,10];%2-element vector, optional, defining the aspect ratio distribution function, could be [ar, NaN] with ar as the mean aspect ratio
 comp.fib.ori='vMs'; %mandatory, either '1D, '3Diso', '2Diso', 'vMF', "vMs"
-comp.fib.oripar=50; %orientation distribution parameter (concentration), kappa [-]
+comp.fib.oripar=2; %orientation distribution parameter (concentration), kappa [-]
 
 %D)fiber microscopic
 comp.fib.MFA=NaN; %optional, microfibril angle [degrees]
