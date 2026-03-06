@@ -69,12 +69,15 @@ if strcmp(comp.fib.ori,'align') || strcmp(comp.fib.ori,'aligned') || strcmp(comp
     else
         Phase.fib1.shape.ori=[comp.fib.oripar(1)*pi/180,comp.fib.oripar(2)*pi/180];
     end
-    str=Phase.fib1;
+    str={Phase.fib1};
 elseif strcmp(comp.fib.ori,'iso') || strcmp(comp.fib.ori,'3Diso')
-    str=Phase.fib1;
+    str={Phase.fib1};
 elseif strcmp(comp.fib.ori,'2Diso') % in-plane 2D distribution
     nfam=20;
-    str=repmat(Phase.fib1,1,nfam);
+    % str=repmat(Phase.fib1,1,nfam);
+    for i=1:nfam
+        str{i} = Phase.fib1;
+    end
     Mat.fib=MatData('fib','transiso',Phase.fib1.mat.C,false,false);
     for i=1:nfam
         azi=(i-1)/nfam*pi;
