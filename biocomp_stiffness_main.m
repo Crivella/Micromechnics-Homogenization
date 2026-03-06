@@ -1,6 +1,11 @@
 %% BIOCOMPOSITE STIFFNESS HOMOGENIZATION
 % Update and cleaned up, Februar 2024
 
+addpath(genpath('material'))
+addpath(genpath('homogenization'))
+addpath(genpath('basics'))
+addpath(genpath('hill'))
+
 clear; clc; close all;
 warning off %otherwise constant Mori-Tanaka issue
 
@@ -23,10 +28,12 @@ comp.fib.d=NaN; %optional, average fiber diameter [µm]
 comp.fib.ardis='single'; %optional, aspect ratio distribution: "single","normal","lognormal", "weibull", "uniform", default is single
 comp.fib.ar=[100];%2-element vector, optional, defining the aspect ratio distribution function, could be [ar, NaN] with ar as the mean aspect ratio
 comp.fib.ori='vMs'; %mandatory, either '1D, '3Diso', '2Diso', 'vMF', "vMs"
-comp.fib.oripar=[1]; %orientation distribution parameter (concentration), kappa [-]
+% comp.fib.ori='align'; %mandatory, either '1D, '3Diso', '2Diso', 'vMF', "vMs"
+comp.fib.oripar=[10]; %orientation distribution parameter (concentration), kappa [-]
+% comp.fib.oripar=[1,1]; %orientation distribution parameter (concentration), kappa [-]
 
 %D)fiber microscopic
-comp.fib.MFA=NaN; %optional, microfibril angle [degrees]
+comp.fib.MFA=0; %optional, microfibril angle [degrees]
 comp.fib.lumpor=NaN; %optional, lumen porosity [-]
 comp.fib.mfrac=NaN; %optional/mandatory, mass fraction of fiber [-], note that either mass or volume fraction has to be given
 comp.fib.vfrac=1; %optional/mandatory, volume fraction of fiber [-], note that either mass or volume fraction has to be given

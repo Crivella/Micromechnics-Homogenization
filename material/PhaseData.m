@@ -1,4 +1,4 @@
-classdef PhaseData < matlab.mixin.Copyable
+classdef PhaseData < handle
     properties
         name                 % Name of the Phase
         mat                  % Material Object
@@ -100,7 +100,7 @@ classdef PhaseData < matlab.mixin.Copyable
                 elseif size(phasepi)==[6,1]
                     newphase.p=phasepi';
                 else
-                    error('input must be either scalar (isotropic eigenstress), or tensor in 3x§ or 6x1 notation')
+                    error('input must be either scalar (isotropic eigenstress), or tensor in 3xï¿½ or 6x1 notation')
                 end
             end
             % eigenstress

@@ -1,4 +1,4 @@
-classdef RVEData1 < matlab.mixin.Copyable
+classdef RVEData1 < handle
     properties
         name                 % Name of the RVE
         phases               % Name of phases homogenized
@@ -30,9 +30,12 @@ classdef RVEData1 < matlab.mixin.Copyable
                 % validation for phase input
                 newRVE.phases=[];
                 for i=1:numel(phaseshom)
-                    if isa(phaseshom(i),'PhaseData') || isa(phaseshom(i),'PhaseDataE')
-                        newRVE.phases.(phaseshom(i).name) = phaseshom(i);
+                    if isa(phaseshom{i},'PhaseData') || isa(phaseshom{i},'PhaseDataE')
+                        newRVE.phases.(phaseshom{i}.name) = phaseshom{i};
                     else
+                        disp('PHASEHOM{i}')
+                        disp(i)
+                        disp(phaseshom{i})
                         error('Phase must be a previously defined Phase object, use PhaseData for definition')
                     end
                 end

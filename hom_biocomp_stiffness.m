@@ -15,42 +15,41 @@ Phase.lignin=PhaseData('lignin',Mat.lignin,{'sphere'},v.lignin);
 Phase.pectin=PhaseData('pectin',Mat.pectin,{'sphere'},v.pectin);
 Phase.extr=PhaseData('extr',Mat.pore,{'sphere'},v.extr+v.wax);
 Phase.ash=PhaseData('ash',Mat.ash,{'sphere'},v.ash);
-
-RVE.pn=RVEData1('pn',[Phase.hemcel,Phase.lignin,Phase.pectin,Phase.extr,Phase.ash],'SCS',{'matrix'},tol);
+RVE.pn=RVEData1('pn',{Phase.hemcel,Phase.lignin,Phase.pectin,Phase.extr,Phase.ash},'SCS',{'matrix'},tol);
 [RVE.pn,Phase.pn]=homE(RVE.pn);
-
 % STEP1b: cellulose
 Phase.amcel=PhaseData('amcel',Mat.amcel,{'matrix'},v.amcel);
 Phase.crycel=PhaseData('crycel',Mat.crycel,{'spheroid',1e-20,[0,0]},v.crycel);
-
-RVE.cel=RVEData1('cel',[Phase.amcel,Phase.crycel],'MT',{'spheroid',1e-20,[0,0]},tol);
+RVE.cel=RVEData1('cel',{Phase.amcel,Phase.crycel},'MT',{'spheroid',1e-20,[0,0]},tol);
 [RVE.cel,Phase.cel]=homE(RVE.cel);
-
 %% STEP2: cell wall
 if comp.fib.MFA==0
     str=Phase.cel;
 else
     nfam=20;
-    str=repmat(Phase.cel,1,nfam);
+    % disp(Phase.cel)
+    % disp(nfam)
+    % str=repmat(Phase.cel,1,nfam);
+    str = {};
     Mat.cel=MatData('cel','transiso',Phase.cel.mat.C,false,false);
     for i=1:nfam
         azi=(i-1)/nfam*2*pi;
         Phase.(['cel',num2str(i)])=PhaseData(['cel',num2str(i)],Mat.cel,{'spheroid',1e-20,[azi,comp.fib.MFA*pi/180]},Phase.cel.vol*1/nfam);
-        str(i)=eval(['Phase.cel',num2str(i)]);
+        % str(i)=eval(['Phase.cel',num2str(i)]);
+        str{i}=eval(['Phase.cel',num2str(i)]);
+        % disp(eval(['Phase.cel',num2str(i)]))
     end
 end
 %RVE.cw=RVEData1('fib',[str,Phase.pn],'MT',{'spheroid',comp.MLar,[0,0]},tol);
-RVE.cw=RVEData1('cw',[str,Phase.pn],'MT',{'matrix'},tol);
+RVE.cw=RVEData1('cw',{str,Phase.pn},'MT',{'matrix'},tol);
 [RVE.cw,Phase.cw]=homE(RVE.cw);
 Phase.cw.mat.C=1/2*(Phase.cw.mat.C+transpose(Phase.cw.mat.C));% get something transversaly isotropic, get rid of strange assymetry !MORI_TANAKA PROBLEM!
-
 %% STEP3: fiber bundle
 Phase.lum=PhaseData('lum',Mat.pore,{'spheroid',comp.MLar,[0,0]},v.lum);
 %Phase.ML=PhaseData('ml',Mat.lignin,{'matrix'},v.lignin);
 
-RVE.fib=RVEData1('fib1',[Phase.lum,Phase.cw],'MT',{'spheroid',ar,'iso'},tol);
+RVE.fib=RVEData1('fib1',{Phase.lum,Phase.cw},'MT',{'spheroid',ar,'iso'},tol);
 [RVE.fib,Phase.fib1]=homE(RVE.fib);
-
 %% STEP4: biocomposite
 Mat.mat=MatData('mat','iso',{'Enu',comp.mat.E,comp.mat.nu},false,false);
 Phase.mat=PhaseData('mat',Mat.mat,{'matrix'},v.mat);
@@ -60,6 +59,7 @@ Phase.air=PhaseData('air',Mat.pore,{'sphere'},v.air);
 %if ~isnan(comp.IF.mode) && comp.IF.mode~=0;    
     Phase.fib1.IF=comp.IF.par; 
 %end
+
 
 % CONSIDER ORIENTATION DISTRIBUTION
 if strcmp(comp.fib.ori,'align') || strcmp(comp.fib.ori,'aligned') || strcmp(comp.fib.ori,'1D')
@@ -103,7 +103,12 @@ elseif strcmp(comp.fib.ori,'vMF') || strcmp(comp.fib.ori,'vMs')
         %elseif strcmp(comp.fib.ori,'vMs') && kappa<1010; nfam=5810;
     else error('too many fibers required, reduce kappa')
     end
-    str=repmat(Phase.fib1,1,nfam);
+    str={}
+
+    for i=1:nfam
+        str{i} = Phase.fib1;
+    end
+    % str=repmat(Phase.fib1,1,nfam);
     Mat.fib=MatData('fib','transiso',Phase.fib1.mat.C,false,false);
     leb = getLebedevSphere(nfam);
     if strcmp(comp.fib.ori,'vMF');
@@ -122,10 +127,10 @@ elseif strcmp(comp.fib.ori,'vMF') || strcmp(comp.fib.ori,'vMs')
         if vol1>1e-5
             Phase.(['fib',num2str(i)])=PhaseData(['fib',num2str(i)],Mat.fib,{'spheroid',ar,[leb.azi(i),leb.zeni(i)]},v.fib*vol1);
             Phase.(['fib',num2str(i)]).IF=comp.IF.par;
-            str(j)=eval(['Phase.fib',num2str(i)]);
+            str{j}=eval(['Phase.fib',num2str(i)]);
             j=j+1;
         else
-            str(j)=[];
+            str{j}=[];
         end
     end
 else
@@ -163,13 +168,30 @@ else
             tmp.name=[tmp.name,'ar',num2str(j)];
             tmp.shape.sr=1/xl(j);
             tmp.vol=tmp.vol/nfam1;
-            str(fibcount)=tmp;
+            str{fibcount}=tmp;
             end
         end
     end
 end
 
-RVE.comp=RVEData1('comp',[Phase.mat,str,Phase.air],'MT',{'matrix'},tol);
+
+% disp(str)
+for i=1:length(str)
+    if isa(str{i},'PhaseData') || isa(str{i},'PhaseDataE')
+        % do nothing
+        disp(str{i}.shape.ori)
+    else
+        disp(['str{', num2str(i) , '} is not a PhaseData object', ' it is a ', class(str{i})])
+    end
+end
+
+% phases = {Phase.mat,str,Phase.air}
+% Above is worng i want to ahve a cell array with the first element as the matrix and the second element as the fiber families, but str is already a cell array, so I need to concatenate them in a way that the first element is the matrix and the second element is the cell array of fiber families, so I can do that by creating a new cell array with the first element as the matrix and the second element as str, like this:
+
+% disp([{Phase.mat},str,{Phase.air}])
+
+% RVE.comp=RVEData1('comp',{Phase.mat,str,Phase.air},'MT',{'matrix'},tol);
+RVE.comp=RVEData1('comp',[{Phase.mat},str,{Phase.air}],'MT',{'matrix'},tol);
 [RVE.comp,Phase.comp]=homE(RVE.comp);
 end
 
